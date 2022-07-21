@@ -1,0 +1,36 @@
+name: Go
+
+on:
+  push:
+    branches: [ "aula_2" ]
+  pull_request:
+    branches: [ "aula_2" ]
+
+jobs:
+
+  Test:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: Set up Go
+      uses: actions/setup-go@v3
+      with:
+        go-version: 1.18
+    
+    - name: Build DB
+      run: docker-compose build
+      
+    - name: Create DB
+      run: docker-compose up -d
+
+    - name: Test
+      run: go test -v main_test.go
+      
+  build:
+      needs: Test
+      runs-on: ubuntu-latest
+      steps:
+      - uses: actions/checkout@v3
+      - name: Build
+        run: go build -v main.go
